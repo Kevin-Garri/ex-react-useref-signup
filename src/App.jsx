@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 
 const letters = "abcdefghijklmnopqrstuvwxyz";
 const numbers = "0123456789";
@@ -6,14 +6,17 @@ const symbols = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~";
 
 function App() {
 
-  // Campi 
-  const [fullName, setFullName] = useState('');
+  // Campi controllati
+  const [description, setDescription] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [specialization, setSpecialization] = useState('');
-  const [experienceYears, setExperienceYears] = useState('');
-  const [description, setDescription] = useState('');
 
+  // Campi non controllati
+  const fullNameRef = useRef();
+  const specializationRef = useRef();
+  const experienceYearsRef = useRef();
+
+  // Validazione in tempo reale
   const isUserNameValid = useMemo(() => {
     const charsValid = username.split('').every(char => letters.includes(char.toLowerCase()) || numbers.includes(char));
     return charsValid && username.trim().length >= 6;
@@ -36,6 +39,12 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    //valori non controllati
+    const fullName = fullNameRef.current.value;
+    const specialization = specializationRef.current.value;
+    const experienceYears = experienceYearsRef.current.value;
+
     if (
       !fullName.trim() ||
       !username.trim() ||
@@ -69,8 +78,8 @@ function App() {
         <label>
           <p>Nome Completo</p>
           <input type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)} />
+            ref={fullNameRef}
+          />
         </label>
         <label>
           <p>Username</p>
@@ -99,9 +108,10 @@ function App() {
         <label>
           <p>Specializzazione</p>
           <select
-            value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
+            ref={specializationRef}
+
           >
+            <option value="">Seleziona</option>
             <option value="Full Stack">Full Stack</option>
             <option value="Frontend">Frontend</option>
             <option value="Backend">Backend</option>
@@ -110,8 +120,7 @@ function App() {
         <label>
           <p>Anni di esperienza</p>
           <input type="number"
-            value={experienceYears}
-            onChange={(e) => setExperienceYears(e.target.value)}
+            ref={experienceYearsRef}
           />
         </label>
         <label>
@@ -137,9 +146,9 @@ function App() {
 
 export default App
 
-/*Milestone 1: Creare un Form con Campi Controllati
+/* .📌Milestone 1: Creare un Form con Campi Controllati
 Crea un form di registrazione con i seguenti campi controllati (gestiti con useState):
-
+ 
 Nome completo (input di testo)
 Username (input di testo)
 Password (input di tipo password)
@@ -152,16 +161,23 @@ L'input Anni di esperienza sia un numero positivo
 La Specializzazione sia selezionata
 Al submit, se il form è valido, stampa in console i dati.*/
 
-/*Milestone 2: Validare in tempo reale
+/* .📌Milestone 2: Validare in tempo reale
 Aggiungere la validazione in tempo reale dei seguenti campi:
-
+ 
 Username: Deve contenere solo caratteri alfanumerici e almeno 6 caratteri (no spazi o simboli
 Password: Deve contenere almeno 8 caratteri, 1 lettera, 1 numero e 1 simbolo.
 Descrizione: Deve contenere tra 100 e 1000 caratteri (senza spazi iniziali e finali).
 Suggerimento: Per semplificare la validazione, puoi definire tre stringhe con i caratteri validi e usare .includes() per controllare se i caratteri appartengono a una di queste categorie:
-
+ 
 const letters = "abcdefghijklmnopqrstuvwxyz";
 const numbers = "0123456789";
 const symbols = "!@#$%^&*()-_=+[]{}|;:'\\",.<>?/`~";
-
+ 
 Per ciascuno dei campi validati in tempo reale, mostrare un messaggio di errore (rosso) nel caso non siano validi, oppure un messaggio di conferma (verde) nel caso siano validi. */
+
+/*.📌 Milestone 3: Convertire i Campi Non Controllati
+Non tutti i campi del form necessitano di essere aggiornati a ogni carattere digitato. Alcuni di essi non influenzano direttamente l’interfaccia mentre l’utente li compila, quindi è possibile gestirli in modo più efficiente.
+
+Analizza il form: Identifica quali campi devono rimanere controllati e quali invece possono essere non controllati senza impattare l’esperienza utente.
+Converti i campi non controllati: Usa useRef() per gestirli e recuperare il loro valore solo al momento del submit.
+Assicurati che la validazione continui a funzionare: Anche se un campo non è controllato, deve comunque essere validato correttamente quando l’utente invia il form.*/
